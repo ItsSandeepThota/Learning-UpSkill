@@ -1,0 +1,151 @@
+<section class="auth-shell">
+  <div class="auth-backdrop auth-backdrop-one"></div>
+  <div class="auth-backdrop auth-backdrop-two"></div>
+
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="brand-mark">SB</div>
+      <div>
+        <p class="eyebrow">Shizen Bank</p>
+        <h1>{{ pageTitle }}</h1>
+      </div>
+    </div>
+
+    <p class="auth-copy">{{ pageCopy }}</p>
+
+    <div class="auth-tabs" role="tablist" aria-label="Authentication mode">
+      <button
+        type="button"
+        class="auth-tab"
+        [class.active]="mode === 'login'"
+        (click)="setMode('login')"
+      >
+        Login
+      </button>
+      <button
+        type="button"
+        class="auth-tab"
+        [class.active]="mode === 'register'"
+        (click)="setMode('register')"
+      >
+        Register
+      </button>
+    </div>
+
+    <div class="status-banner" *ngIf="statusMessage" [attr.data-tone]="statusTone">
+      {{ statusMessage }}
+    </div>
+
+    <div class="panel-stack">
+      <form class="auth-form" *ngIf="mode === 'login'" [formGroup]="loginForm" (ngSubmit)="submit()" novalidate>
+        <div class="field-group">
+          <label for="login-email">Client ID or email</label>
+          <input id="login-email" type="email" formControlName="email" placeholder="name@example.com" />
+          <p class="field-error" *ngIf="getControlError(loginForm.get('email')) as error">{{ error }}</p>
+        </div>
+
+        <div class="field-group">
+          <label for="login-password">Password</label>
+          <input id="login-password" type="password" formControlName="password" placeholder="Enter your password" />
+          <p class="field-error" *ngIf="getControlError(loginForm.get('password')) as error">{{ error }}</p>
+        </div>
+
+        <div class="form-row">
+          <label class="checkbox">
+            <input type="checkbox" formControlName="rememberMe" />
+            <span>Remember me</span>
+          </label>
+          <span class="helper-note">Need help? Contact Shizen Bank support.</span>
+        </div>
+
+        <button type="submit" class="primary-btn" [disabled]="loading">{{ loading ? 'Recording...' : 'Secure Sign In' }}</button>
+
+        <p class="switch-copy">
+          New here?
+          <button type="button" class="text-btn" (click)="setMode('register')">Open an account</button>
+        </p>
+      </form>
+
+      <form class="auth-form" *ngIf="mode === 'register'" [formGroup]="registerForm" (ngSubmit)="submit()" novalidate>
+        <div class="name-grid">
+          <div class="field-group">
+            <label for="first-name">First name</label>
+            <input id="first-name" type="text" formControlName="firstName" placeholder="Ava" />
+            <p class="field-error" *ngIf="getControlError(registerForm.get('firstName')) as error">{{ error }}</p>
+          </div>
+
+          <div class="field-group">
+            <label for="last-name">Last name</label>
+            <input id="last-name" type="text" formControlName="lastName" placeholder="Smith" />
+            <p class="field-error" *ngIf="getControlError(registerForm.get('lastName')) as error">{{ error }}</p>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="register-email">Email address</label>
+          <input id="register-email" type="email" formControlName="email" placeholder="name@example.com" />
+          <p class="field-error" *ngIf="getControlError(registerForm.get('email')) as error">{{ error }}</p>
+        </div>
+
+        <div class="field-group">
+          <label for="register-password">Password</label>
+          <input id="register-password" type="password" formControlName="password" placeholder="Create a strong password" />
+          <p class="field-error" *ngIf="getControlError(registerForm.get('password')) as error">{{ error }}</p>
+        </div>
+
+        <div class="field-group">
+          <label for="register-confirm">Confirm password</label>
+          <input id="register-confirm" type="password" formControlName="confirmPassword" placeholder="Repeat password" />
+          <p class="field-error" *ngIf="getControlError(registerForm.get('confirmPassword')) as error">{{ error }}</p>
+        </div>
+
+        <label class="checkbox consent">
+          <input type="checkbox" formControlName="agreeToTerms" />
+          <span>I agree to the Shizen Bank terms and privacy policy</span>
+        </label>
+        <p class="field-error" *ngIf="getControlError(registerForm.get('agreeToTerms')) as error">{{ error }}</p>
+
+        <button type="submit" class="primary-btn" [disabled]="loading">{{ loading ? 'Recording...' : 'Create profile' }}</button>
+
+        <p class="switch-copy">
+          Already have an account?
+          <button type="button" class="text-btn" (click)="setMode('login')">Login</button>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <aside class="auth-aside">
+    <div class="metric-card">
+      <p class="metric-label">Private banking</p>
+      <h2>One secure place for cards, transfers, and account activity.</h2>
+      <p>
+        This interface is designed like a real banking product and connects directly to your backend API.
+      </p>
+    </div>
+
+    <div class="feature-list">
+      <div>
+        <span class="feature-dot"></span>
+        <div>
+          <h3>Account access</h3>
+          <p>Sign in and register flows are clearly separated and easy to follow.</p>
+        </div>
+      </div>
+      <div>
+        <span class="feature-dot"></span>
+        <div>
+          <h3>Audit trail</h3>
+          <p>Each submission is recorded in MongoDB for your backend records.</p>
+        </div>
+      </div>
+      <div>
+        <span class="feature-dot"></span>
+        <div>
+          <h3>Responsive banking UI</h3>
+          <p>Designed to feel like a polished product on desktop and mobile.</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+</section>

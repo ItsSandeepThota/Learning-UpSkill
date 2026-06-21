@@ -1,0 +1,26 @@
+<section class="profile-shell">
+  <div class="profile-card">
+    <div class="profile-header">
+      <div>
+        <p class="eyebrow">Your profile</p>
+        <h1>{{ userDetails.name }}</h1>
+      </div>
+      <a class="ghost-link" routerLink="/dashboard">Back to dashboard</a>
+    </div>
+
+    <div class="profile-grid">
+      <article class="profile-block">
+        <h2>Personal info</h2>
+        <p><strong>Name:</strong> {{ userDetails.name }}</p>
+        <p><strong>Email:</strong> {{ userDetails.email }}</p>
+        <p><strong>Auth mode:</strong> {{ userDetails.mode }}</p>
+      </article>
+
+      <article class="profile-block">
+        <h2>Preferences</h2>
+        <p><strong>Remember me:</strong> {{ userDetails.rememberMe ? 'Yes' : 'No' }}</p>
+        <p><strong>Terms accepted:</strong> {{ userDetails.agreeToTerms ? 'Yes' : 'No' }}</p>
+      </article>
+    </div>
+  </div>
+</section>

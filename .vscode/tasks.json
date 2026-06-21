@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "start-shizen-bank-frontend",
+			"type": "shell",
+			"command": "cd frontend/angular-app && npm start -- --host 0.0.0.0 --port 4200",
+			"isBackground": true,
+			"group": "build"
+		}
+	]
+}

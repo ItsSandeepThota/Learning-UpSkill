@@ -1,0 +1,29 @@
+<section class="dashboard-shell">
+  <div class="dashboard-card">
+    <div class="dashboard-header">
+      <div>
+        <p class="eyebrow">Welcome back</p>
+        <h1>{{ userDetails.name }}</h1>
+      </div>
+      <a class="ghost-link" routerLink="/profile">View profile</a>
+    </div>
+
+    <div class="status-pill">{{ message }}</div>
+
+    <div class="details-grid">
+      <article class="detail-card">
+        <h2>Profile summary</h2>
+        <p><strong>Email:</strong> {{ userDetails.email }}</p>
+        <p><strong>Auth mode:</strong> {{ userDetails.mode }}</p>
+        <p><strong>Remember me:</strong> {{ userDetails.rememberMe ? 'Yes' : 'No' }}</p>
+      </article>
+
+      <article class="detail-card">
+        <h2>Latest record</h2>
+        <p><strong>Inserted ID:</strong> {{ record?.insertedId ?? 'Pending' }}</p>
+        <p><strong>Created:</strong> {{ record?.createdAt ?? 'Pending' }}</p>
+        <p><strong>Backend message:</strong> {{ record?.message ?? 'Waiting for backend response.' }}</p>
+      </article>
+    </div>
+  </div>
+</section>

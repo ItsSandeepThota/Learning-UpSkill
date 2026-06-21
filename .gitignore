@@ -1,0 +1,31 @@
+# OS
+.DS_Store
+
+# Angular / Node
+node_modules/
+dist/
+.angular/
+coverage/
+.npm/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# MongoDB / data
+*.log
+mongodb-data/
+backend/python-api/data/
+
+# IDE
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
