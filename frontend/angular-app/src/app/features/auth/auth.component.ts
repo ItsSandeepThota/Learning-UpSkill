@@ -107,7 +107,8 @@ export class AuthComponent {
       this.statusTone = 'success';
       this.statusMessage = successMessage;
 
-      if (this.mode === 'register' && response.insertedId === 'pending') {
+      console.log('Auth response payload:', response);
+      if (this.mode === 'register' && (response.insertedId === 'pending' || (response as any)['inserted_id'] === 'pending')) {
         this.showVerificationForm = true;
         this.verificationEmail = payload.email;
         this.loading = false;

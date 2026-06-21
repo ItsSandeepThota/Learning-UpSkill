@@ -12,9 +12,10 @@
   position: relative;
   min-height: 100vh;
   display: grid;
-  grid-template-columns: minmax(320px, 560px) minmax(280px, 1fr);
-  gap: 2rem;
-  align-items: center;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 560px));
+  justify-content: center;
+  align-content: center;
+  gap: 3rem;
   padding: clamp(1rem, 3vw, 3rem);
   overflow: hidden;
 }
@@ -62,8 +63,10 @@
 
 .auth-brand {
   display: flex;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 0.75rem;
   align-items: center;
+  text-align: center;
 }
 
 .brand-mark {
@@ -102,6 +105,35 @@ h1 {
   margin-top: 1rem;
   color: rgba(245, 239, 227, 0.76);
   line-height: 1.6;
+  text-align: center;
+}
+
+.status-banner {
+  margin-top: 1.25rem;
+  padding: 0.85rem 1.25rem;
+  border-radius: 0.75rem;
+  font-size: 0.94rem;
+  text-align: center;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.status-banner[data-tone="success"] {
+  background: rgba(46, 213, 115, 0.15);
+  border: 1px solid rgba(46, 213, 115, 0.35);
+  color: #2ed573;
+}
+
+.status-banner[data-tone="error"] {
+  background: rgba(255, 71, 87, 0.15);
+  border: 1px solid rgba(255, 71, 87, 0.35);
+  color: #ff4757;
+}
+
+.status-banner[data-tone="info"] {
+  background: rgba(30, 144, 255, 0.15);
+  border: 1px solid rgba(30, 144, 255, 0.35);
+  color: #1e90ff;
 }
 
 .auth-tabs {
@@ -243,10 +275,7 @@ h1 {
 }
 
 .auth-aside {
-  max-width: 560px;
-  color: #f5efe3;
-  display: grid;
-  gap: 1.25rem;
+  display: none;
 }
 
 .metric-card,
