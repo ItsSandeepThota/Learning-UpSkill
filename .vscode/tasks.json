@@ -1,12 +1,30 @@
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"label": "start-shizen-bank-frontend",
-			"type": "shell",
-			"command": "cd frontend/angular-app && npm start -- --host 0.0.0.0 --port 4200",
-			"isBackground": true,
-			"group": "build"
-		}
-	]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start Frontend",
+      "type": "shell",
+      "command": "npm run start:frontend",
+      "isBackground": true,
+      "problemMatcher": "$tsc-watch"
+    },
+    {
+      "label": "Start Backend",
+      "type": "shell",
+      "command": "npm run start:backend",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Start both Frontend and Backend",
+      "dependsOn": [
+        "Start Frontend",
+        "Start Backend"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
 }

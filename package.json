@@ -1,0 +1,13 @@
+{
+  "name": "learning-upskill-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Monorepo for Learning-UpSkill project containing frontend and backend",
+  "scripts": {
+    "build": "npm run build --prefix frontend/angular-app",
+    "start:frontend": "npm run start --prefix frontend/angular-app",
+    "start:backend": "cd backend/python-api && ../../.venv/bin/uvicorn app.main:app --reload --host 127.0.0.1 --port 8000",
+    "start": "npx -y concurrently --names \"frontend,backend\" -c \"blue,green\" \"npm run start:frontend\" \"npm run start:backend\"",
+    "test": "npm run test --prefix frontend/angular-app"
+  }
+}

@@ -13,7 +13,7 @@
 
     <p class="auth-copy">{{ pageCopy }}</p>
 
-    <div class="auth-tabs" role="tablist" aria-label="Authentication mode">
+    <div class="auth-tabs" *ngIf="!showVerificationForm" role="tablist" aria-label="Authentication mode">
       <button
         type="button"
         class="auth-tab"
@@ -37,7 +37,26 @@
     </div>
 
     <div class="panel-stack">
-      <form class="auth-form" *ngIf="mode === 'login'" [formGroup]="loginForm" (ngSubmit)="submit()" novalidate>
+      <!-- Verification Form -->
+      <form class="auth-form" *ngIf="showVerificationForm" [formGroup]="verificationForm" (ngSubmit)="submitVerification()" novalidate>
+        <div class="field-group">
+          <label for="verification-code">6-Digit Verification Code</label>
+          <input id="verification-code" type="text" formControlName="code" placeholder="Enter 6-digit code" maxlength="6" autocomplete="one-time-code" />
+          <span class="field-help-text" style="font-size: 0.75rem; color: #888; margin-top: 0.25rem; display: block;">
+            We sent a verification code to <strong>{{ verificationEmail }}</strong>. Enter it here to activate your account.
+          </span>
+          <p class="field-error" *ngIf="getControlError(verificationForm.get('code')) as error">{{ error }}</p>
+        </div>
+
+        <button type="submit" class="primary-btn" [disabled]="loading">{{ loading ? 'Verifying...' : 'Verify Code' }}</button>
+
+        <p class="switch-copy">
+          Did not receive it?
+          <button type="button" class="text-btn" (click)="cancelVerification()">Cancel & Go Back</button>
+        </p>
+      </form>
+
+      <form class="auth-form" *ngIf="mode === 'login' && !showVerificationForm" [formGroup]="loginForm" (ngSubmit)="submit()" novalidate>
         <div class="field-group">
           <label for="login-email">Client ID or email</label>
           <input id="login-email" type="email" formControlName="email" placeholder="name@example.com" />
@@ -66,7 +85,7 @@
         </p>
       </form>
 
-      <form class="auth-form" *ngIf="mode === 'register'" [formGroup]="registerForm" (ngSubmit)="submit()" novalidate>
+      <form class="auth-form" *ngIf="mode === 'register' && !showVerificationForm" [formGroup]="registerForm" (ngSubmit)="submit()" novalidate>
         <div class="name-grid">
           <div class="field-group">
             <label for="first-name">First name</label>
@@ -90,6 +109,9 @@
         <div class="field-group">
           <label for="register-password">Password</label>
           <input id="register-password" type="password" formControlName="password" placeholder="Create a strong password" />
+          <span class="field-help-text" style="font-size: 0.75rem; color: #888; margin-top: 0.25rem; display: block;">
+            Must be at least 10 characters long, containing uppercase, lowercase, numbers, and special symbols.
+          </span>
           <p class="field-error" *ngIf="getControlError(registerForm.get('password')) as error">{{ error }}</p>
         </div>
 

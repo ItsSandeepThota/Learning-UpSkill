@@ -1,0 +1,8 @@
+{
+  "exclude": [
+    "**/node_modules",
+    "**/__pycache__"
+  ],
+  "venvPath": "/Users/sandeepthota/AI/Learning-UpSkill",
+  "venv": ".venv"
+}

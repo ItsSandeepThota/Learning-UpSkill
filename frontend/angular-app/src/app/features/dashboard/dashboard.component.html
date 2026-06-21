@@ -1,29 +1,709 @@
-<section class="dashboard-shell">
-  <div class="dashboard-card">
-    <div class="dashboard-header">
-      <div>
-        <p class="eyebrow">Welcome back</p>
-        <h1>{{ userDetails.name }}</h1>
+<div class="desktop-wrapper">
+  
+  <!-- Global Top Navigation Bar -->
+  <header class="desktop-nav">
+    <div class="nav-brand">
+      <div class="brand-mark">SB</div>
+      <div class="brand-info">
+        <span class="eyebrow">Shizen Bank</span>
+        <span class="sub-brand">Secure Portal</span>
       </div>
-      <a class="ghost-link" routerLink="/profile">View profile</a>
     </div>
 
-    <div class="status-pill">{{ message }}</div>
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="nav-tab" [class.active]="activeTab === 'home'" (click)="activeTab = 'home'">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        <span>Overview</span>
+      </button>
+      <button class="nav-tab" [class.active]="activeTab === 'cards'" (click)="activeTab = 'cards'">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+        <span>Cards & Limits</span>
+      </button>
+      <button class="nav-tab" [class.active]="activeTab === 'contacts'" (click)="activeTab = 'contacts'">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <span>Beneficiaries</span>
+      </button>
+      <button class="nav-tab" [class.active]="activeTab === 'more'" (click)="activeTab = 'more'">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span>Security & Meta</span>
+      </button>
+    </nav>
 
-    <div class="details-grid">
-      <article class="detail-card">
-        <h2>Profile summary</h2>
-        <p><strong>Email:</strong> {{ userDetails.email }}</p>
-        <p><strong>Auth mode:</strong> {{ userDetails.mode }}</p>
-        <p><strong>Remember me:</strong> {{ userDetails.rememberMe ? 'Yes' : 'No' }}</p>
-      </article>
+    <!-- Right Side Actions & User Profile -->
+    <div class="nav-right">
+      <button class="nav-icon-btn" [class.has-unread]="unreadNotificationCount > 0" (click)="toggleNotifications()">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+        @if (unreadNotificationCount > 0) {
+          <span class="notif-badge"></span>
+        }
+      </button>
 
-      <article class="detail-card">
-        <h2>Latest record</h2>
-        <p><strong>Inserted ID:</strong> {{ record?.insertedId ?? 'Pending' }}</p>
-        <p><strong>Created:</strong> {{ record?.createdAt ?? 'Pending' }}</p>
-        <p><strong>Backend message:</strong> {{ record?.message ?? 'Waiting for backend response.' }}</p>
-      </article>
+      <div class="user-greeting">
+        <span class="user-name">Hi, {{ profileName ? profileName.split(' ')[0] : userDetails.name.split(' ')[0] }}</span>
+      </div>
+
+      <button class="logout-btn" (click)="logout()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        <span>Exit</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Notifications Panel Overlay -->
+  @if (showNotifications) {
+    <div class="notifications-dropdown" (click)="$event.stopPropagation()">
+      <div class="dropdown-header">
+        <h4>Notifications</h4>
+        <button class="text-link" (click)="markAllNotificationsRead()">Clear All</button>
+      </div>
+      <div class="dropdown-body">
+        @if (notifications.length === 0) {
+          <p class="empty-state">No active notifications</p>
+        } @else {
+          @for (n of notifications; track n.id) {
+            <div class="notification-item" [class.unread]="n.unread">
+              <p>{{ n.text }}</p>
+              <span class="time">{{ n.time }}</span>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Main Desktop Financial Workspace -->
+  <main class="desktop-main">
+    
+    <!-- TAB 1: OVERVIEW -->
+    @if (activeTab === 'home') {
+      <div class="grid-layout">
+        
+        <!-- Left Workspace Section (2/3 width) -->
+        <div class="main-column">
+          
+          <!-- Balance Summary Card -->
+          <div class="dashboard-panel balance-panel">
+            <span class="eyebrow">Available Balance</span>
+            <div class="balance-display-row">
+              <h1 class="balance-amount">{{ currentCurrencyInfo.symbol }}{{ displayedBalance }}</h1>
+              
+              <!-- Currency Dropdown Selector -->
+              <div class="currency-dropdown-container">
+                <button class="currency-trigger" (click)="toggleCurrencyDropdown()">
+                  <span>{{ currentCurrencyInfo.flag }} {{ currentCurrencyInfo.code }}</span>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+                @if (showCurrencyDropdown) {
+                  <div class="currency-select-menu">
+                    @for (c of currencies; track c.code) {
+                      <button class="currency-select-item" [class.selected]="c.code === selectedCurrency" (click)="selectCurrency(c.code)">
+                        <span>{{ c.flag }} {{ c.code }}</span>
+                        <span class="rate-note">($1 = {{ c.rate }} {{ c.code }})</span>
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions Grid -->
+          <div class="actions-section">
+            <h3 class="panel-title">Execute Quick Transactions</h3>
+            <div class="action-buttons-grid">
+              
+              <!-- Pay someone -->
+              <button class="action-box purple-accent" (click)="openModal('pay')">
+                <div class="action-icon">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                </div>
+                <div class="action-text">
+                  <h4>Pay Beneficiary</h4>
+                  <p>Send funds to bank or account</p>
+                </div>
+              </button>
+
+              <!-- Request money -->
+              <button class="action-box green-accent" (click)="openModal('request')">
+                <div class="action-icon">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="7" x2="7" y2="17"></line><polyline points="17 17 7 17 7 7"></polyline></svg>
+                </div>
+                <div class="action-text">
+                  <h4>Request Inbound</h4>
+                  <p>Create payment request links</p>
+                </div>
+              </button>
+
+              <!-- Buy airtime -->
+              <button class="action-box orange-accent" (click)="openModal('airtime')">
+                <div class="action-icon">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                </div>
+                <div class="action-text">
+                  <h4>Buy Top-up</h4>
+                  <p>Purchase mobile top-up credits</p>
+                </div>
+              </button>
+
+              <!-- Pay bill -->
+              <button class="action-box blue-accent" (click)="openModal('bill')">
+                <div class="action-icon">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="12" y1="4" x2="12" y2="20"></line><line x1="2" y1="12" x2="22" y2="12"></line></svg>
+                </div>
+                <div class="action-text">
+                  <h4>Pay Utility</h4>
+                  <p>Settle electricity or water bill</p>
+                </div>
+              </button>
+
+            </div>
+          </div>
+
+          <!-- Recent Transactions -->
+          <div class="dashboard-panel transactions-panel-desktop">
+            <div class="panel-header-desktop">
+              <h3 class="panel-title">Recent Activity Logs</h3>
+              <span class="security-stamp">Encrypted Logs</span>
+            </div>
+            
+            <div class="transactions-table-wrap">
+              <table class="tx-table">
+                <thead>
+                  <tr>
+                    <th>Description</th>
+                    <th>Date & Time</th>
+                    <th>Status</th>
+                    <th class="text-right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (t of transactions; track t.id) {
+                    <tr class="tx-row">
+                      <td>
+                        <div class="tx-desc-cell">
+                          <span class="tx-icon">{{ t.flag }}</span>
+                          <div>
+                            <span class="tx-title-text">{{ t.title }}</span>
+                            <span class="tx-subtitle-text">{{ t.subtitle }}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="tx-time-cell">{{ t.time }}</td>
+                      <td>
+                        <span class="tx-status-pill {{ t.status }}">{{ t.status }}</span>
+                      </td>
+                      <td class="text-right font-bold" [class.negative]="t.amount < 0" [class.positive]="t.amount > 0">
+                        {{ t.amount < 0 ? '-' : '+' }}{{ t.currency }} {{ (t.amount < 0 ? -t.amount : t.amount) | number:'1.2-2' }}
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Sidebar Section (1/3 width) -->
+        <div class="sidebar-column">
+          
+          <!-- Interactive Virtual Card Simulator -->
+          <div class="dashboard-panel card-simulator-panel">
+            <h3 class="panel-title">Active Security Card</h3>
+            
+            @if (selectedCard) {
+              <!-- Flippable Card Outer Container -->
+              <div class="credit-card-frame" [class.flipped]="isCardFlipped" [class.frozen]="selectedCard.frozen" (click)="isCardFlipped = !isCardFlipped">
+                <!-- FRONT FACE -->
+                <div class="card-side front-side gradient-{{ selectedCard.color }}">
+                  <div class="card-logo-row">
+                    <span class="card-brand-title">Shizen Bank</span>
+                    <span class="secure-chip-logo"></span>
+                  </div>
+                  <div class="card-chip-container">
+                    <div class="gold-chip"></div>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" class="wireless-icon"><path d="M5 17.5a6.5 6.5 0 0 1 0-11"></path><path d="M8 20a10 10 0 0 1 0-16"></path></svg>
+                  </div>
+                  <div class="card-number-masked">{{ selectedCard.number }}</div>
+                  <div class="card-meta-row">
+                    <div>
+                      <span class="meta-label">CARD HOLDER</span>
+                      <span class="meta-value">{{ selectedCard.holder }}</span>
+                    </div>
+                    <div>
+                      <span class="meta-label">EXPIRES</span>
+                      <span class="meta-value">{{ selectedCard.expiry }}</span>
+                    </div>
+                  </div>
+                  @if (selectedCard.frozen) {
+                    <div class="locked-banner">LOCKED</div>
+                  }
+                </div>
+
+                <!-- BACK FACE -->
+                <div class="card-side back-side gradient-{{ selectedCard.color }}">
+                  <div class="black-stripe"></div>
+                  <div class="signature-cvv-stripe">
+                    <div class="signature-line">Virtual Authorized</div>
+                    <div class="cvv-section">
+                      <span class="cvv-lbl">CVV</span>
+                      <span class="cvv-val">{{ selectedCard.cvv }}</span>
+                    </div>
+                  </div>
+                  <div class="card-disclaimer">
+                    Secure virtual card issued for banking simulation. Protected under active encryption.
+                  </div>
+                </div>
+              </div>
+
+              <p class="helper-hint">Click card to reveal details</p>
+
+              <!-- Card Quick Controls -->
+              <div class="card-quick-actions">
+                <div class="action-row">
+                  <span class="action-lbl">Lock Card</span>
+                  <button class="switch-btn" [class.active]="selectedCard.frozen" (click)="toggleCardFreeze()">
+                    <span class="switch-dot"></span>
+                  </button>
+                </div>
+
+                <div class="card-color-picker">
+                  <span class="action-lbl">Card Theme</span>
+                  <div class="themes-row">
+                    <button class="color-dot blue-theme" [class.selected]="selectedCard.color === 'blue'" (click)="changeCardColor('blue')"></button>
+                    <button class="color-dot purple-theme" [class.selected]="selectedCard.color === 'purple'" (click)="changeCardColor('purple')"></button>
+                    <button class="color-dot pink-theme" [class.selected]="selectedCard.color === 'pink'" (click)="changeCardColor('pink')"></button>
+                    <button class="color-dot dark-theme" [class.selected]="selectedCard.color === 'dark'" (click)="changeCardColor('dark')"></button>
+                  </div>
+                </div>
+              </div>
+            } @else {
+              <p class="empty-state">Loading card details...</p>
+            }
+          </div>
+
+          <!-- Favorite Beneficiaries Section -->
+          <div class="dashboard-panel beneficiaries-panel">
+            <div class="panel-header-desktop">
+              <h3 class="panel-title">Quick Beneficiaries</h3>
+              <button class="text-link" (click)="openModal('addContact')">+ Add</button>
+            </div>
+            
+            <div class="beneficiaries-list-desktop">
+              @for (f of favorites; track f.name) {
+                <div class="beneficiary-pill" (click)="payFavoriteContact(f)">
+                  <div class="avatar-holder">
+                    @if (f.avatarUrl) {
+                      <img [src]="f.avatarUrl" [alt]="f.name">
+                    } @else {
+                      <div class="avatar-text">{{ f.initials }}</div>
+                    }
+                    <span class="flag-badge">{{ f.flag }}</span>
+                  </div>
+                  <div class="beneficiary-meta">
+                    <span class="name">{{ f.name }}</span>
+                    <span class="desc">{{ f.currency }} account</span>
+                  </div>
+                  <button class="quick-pay-action-btn">Pay</button>
+                </div>
+              }
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    }
+
+    <!-- TAB 2: CARDS AND LIMITS -->
+    @if (activeTab === 'cards') {
+      <div class="cards-full-workspace">
+        <div class="workspace-header">
+          <h2>Virtual Cards Control Desk</h2>
+          <p>Instantly spawn cards, configure spend caps, and review limits securely.</p>
+        </div>
+
+        <div class="cards-grid-layout">
+          <!-- Left side: Select Card & Flip -->
+          <div class="card-display-column">
+            <div class="cards-selector-pills">
+              @for (c of cards; track c.id) {
+                <button class="card-pill" [class.active]="c.id === selectedCardId" (click)="selectCard(c.id)">
+                  <span class="type-indicator" [class]="c.type"></span>
+                  <span>{{ c.type === 'debit' ? 'Virtual Debit' : 'Virtual Credit' }} •••• {{ c.number.slice(-4) }}</span>
+                </button>
+              }
+              <button class="add-card-pill" (click)="openModal('addCard')">
+                + Create New Virtual Card
+              </button>
+            </div>
+
+            <!-- Card simulation -->
+            @if (selectedCard) {
+              <div class="credit-card-frame lg-card" [class.flipped]="isCardFlipped" [class.frozen]="selectedCard.frozen" (click)="isCardFlipped = !isCardFlipped">
+                <!-- FRONT FACE -->
+                <div class="card-side front-side gradient-{{ selectedCard.color }}">
+                  <div class="card-logo-row">
+                    <span class="card-brand-title">Shizen Bank</span>
+                    <span class="secure-chip-logo"></span>
+                  </div>
+                  <div class="card-chip-container">
+                    <div class="gold-chip"></div>
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" class="wireless-icon"><path d="M5 17.5a6.5 6.5 0 0 1 0-11"></path><path d="M8 20a10 10 0 0 1 0-16"></path></svg>
+                  </div>
+                  <div class="card-number-masked">{{ selectedCard.number }}</div>
+                  <div class="card-meta-row">
+                    <div>
+                      <span class="meta-label">CARD HOLDER</span>
+                      <span class="meta-value">{{ selectedCard.holder }}</span>
+                    </div>
+                    <div>
+                      <span class="meta-label">EXPIRES</span>
+                      <span class="meta-value">{{ selectedCard.expiry }}</span>
+                    </div>
+                  </div>
+                  @if (selectedCard.frozen) {
+                    <div class="locked-banner">LOCKED</div>
+                  }
+                </div>
+
+                <!-- BACK FACE -->
+                <div class="card-side back-side gradient-{{ selectedCard.color }}">
+                  <div class="black-stripe"></div>
+                  <div class="signature-cvv-stripe">
+                    <div class="signature-line">Virtual Authorized</div>
+                    <div class="cvv-section">
+                      <span class="cvv-lbl">CVV</span>
+                      <span class="cvv-val">{{ selectedCard.cvv }}</span>
+                    </div>
+                  </div>
+                  <div class="card-disclaimer">
+                    Secure virtual card issued for banking simulation. Protected under active encryption.
+                  </div>
+                </div>
+              </div>
+              <p class="helper-hint">Click card to reveal details</p>
+            } @else {
+              <p class="empty-state">Loading card details...</p>
+            }
+          </div>
+
+          <!-- Right side: Controls panel -->
+          <div class="card-controls-column">
+            @if (selectedCard) {
+              <div class="dashboard-panel limit-controls-panel">
+                <h3>Card Security Controls</h3>
+                
+                <!-- Freeze toggle row -->
+                <div class="settings-row-desktop">
+                  <div>
+                    <h4>Lock Card Status</h4>
+                    <p>Freeze transactions on this card instantly.</p>
+                  </div>
+                  <button class="switch-btn" [class.active]="selectedCard.frozen" (click)="toggleCardFreeze()">
+                    <span class="switch-dot"></span>
+                  </button>
+                </div>
+
+                <!-- Limit Slider -->
+                <div class="settings-stack-desktop">
+                  <div class="limit-labels-row">
+                    <h4>Monthly Spending Cap</h4>
+                    <span class="limit-display-text">{{ currentCurrencyInfo.symbol }}{{ (selectedCard.limit * currentCurrencyInfo.rate).toLocaleString() }}</span>
+                  </div>
+                  <input type="range" class="limits-slider-bar" min="100" max="5000" step="50" [(ngModel)]="selectedCard.limit" (change)="saveCardLimit(selectedCard)">
+                  <span class="helper-note">Conversion based on active exchange rates.</span>
+                </div>
+
+                <!-- Card theme -->
+                <div class="settings-stack-desktop">
+                  <h4>Card Theme Color</h4>
+                  <div class="themes-row">
+                    <button class="color-dot blue-theme" [class.selected]="selectedCard.color === 'blue'" (click)="changeCardColor('blue')"></button>
+                    <button class="color-dot purple-theme" [class.selected]="selectedCard.color === 'purple'" (click)="changeCardColor('purple')"></button>
+                    <button class="color-dot pink-theme" [class.selected]="selectedCard.color === 'pink'" (click)="changeCardColor('pink')"></button>
+                    <button class="color-dot dark-theme" [class.selected]="selectedCard.color === 'dark'" (click)="changeCardColor('dark')"></button>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- TAB 3: BENEFICIARIES -->
+    @if (activeTab === 'contacts') {
+      <div class="beneficiaries-full-workspace">
+        <div class="workspace-header-flex">
+          <div>
+            <h2>Registered Beneficiaries</h2>
+            <p>Manage list of verified transaction accounts.</p>
+          </div>
+          <button class="primary-action-btn" (click)="openModal('addContact')">
+            + Register Beneficiary
+          </button>
+        </div>
+
+        <div class="beneficiaries-grid-desktop">
+          @for (f of favorites; track f.name) {
+            <div class="beneficiary-desktop-card" (click)="payFavoriteContact(f)">
+              <div class="avatar-holder-lg">
+                @if (f.avatarUrl) {
+                  <img [src]="f.avatarUrl" [alt]="f.name">
+                } @else {
+                  <div class="avatar-text-lg">{{ f.initials }}</div>
+                }
+                <span class="flag-badge-lg">{{ f.flag }}</span>
+              </div>
+              <h4>{{ f.name }}</h4>
+              <p>OroboPay user • {{ f.currency }} account</p>
+              <button class="pay-btn-action">Initiate Transfer</button>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- TAB 4: SECURITY AND META -->
+    @if (activeTab === 'more') {
+      <div class="security-meta-workspace">
+        <div class="workspace-header">
+          <h2>Security & Session Information</h2>
+          <p>Review logged connection data and secure database status.</p>
+        </div>
+
+        <div class="meta-grid">
+          <!-- Personal details -->
+          <div class="dashboard-panel meta-panel">
+            <h3>Registered Details</h3>
+            <div class="meta-row-info">
+              <span class="label">Full Name</span>
+              <span class="value">{{ profileName || userDetails.name }}</span>
+            </div>
+            <div class="meta-row-info">
+              <span class="label">Primary Email</span>
+              <span class="value">{{ profileEmail || userDetails.email }}</span>
+            </div>
+            @if (phoneNo) {
+              <div class="meta-row-info">
+                <span class="label">Phone Number</span>
+                <span class="value">{{ phoneNo }}</span>
+              </div>
+            }
+            @if (location) {
+              <div class="meta-row-info">
+                <span class="label">Location</span>
+                <span class="value">{{ location }}</span>
+              </div>
+            }
+            @if (accountNo) {
+              <div class="meta-row-info">
+                <span class="label">Account Number</span>
+                <span class="value">{{ accountNo }}</span>
+              </div>
+            }
+            <div class="meta-row-info">
+              <span class="label">Verification State</span>
+              <span class="value verified-pill">Active Verified</span>
+            </div>
+          </div>
+
+          <!-- Auth meta logs -->
+          <div class="dashboard-panel meta-panel">
+            <h3>Session Signature</h3>
+            <div class="meta-row-info">
+              <span class="label">Access Protocol</span>
+              <span class="value uppercase">{{ userDetails.mode }}</span>
+            </div>
+            @if (record?.insertedId) {
+              <div class="meta-stack-info">
+                <span class="label">Secure ID Registry Signature</span>
+                <code class="security-token">{{ record.insertedId }}</code>
+              </div>
+            }
+            <div class="meta-stack-info">
+              <span class="label">Registry Connection Status</span>
+              <span class="value info-desc">{{ message }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="danger-zone">
+          <h3>Danger Zone</h3>
+          <p>Discard current secure tokens and exit application session.</p>
+          <button class="danger-btn" (click)="logout()">
+            Destroy Session & Logout
+          </button>
+        </div>
+      </div>
+    }
+
+  </main>
+</div>
+
+<!-- ============================================== -->
+<!--             SECURE ACTION OVERLAYS             -->
+<!-- ============================================== -->
+@if (activeModal) {
+  <div class="modal-backdrop-overlay" (click)="closeModal()">
+    <div class="modal-card-desktop" (click)="$event.stopPropagation()">
+      <div class="modal-header-desktop">
+        @if (activeModal === 'pay') { <h3>Secure Transfer Portal</h3> }
+        @if (activeModal === 'request') { <h3>Request Payment Portal</h3> }
+        @if (activeModal === 'airtime') { <h3>Mobile Top-up Portal</h3> }
+        @if (activeModal === 'bill') { <h3>Utility Settlement Panel</h3> }
+        @if (activeModal === 'addContact') { <h3>Register Beneficiary</h3> }
+        @if (activeModal === 'addCard') { <h3>Generate Virtual Card</h3> }
+
+        <button class="close-icon-btn" (click)="closeModal()">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="modal-body-desktop">
+        
+        <!-- Pay Someone -->
+        @if (activeModal === 'pay') {
+          <form (submit)="submitPay(); $event.preventDefault()" class="modal-form">
+            <div class="form-field">
+              <label>Beneficiary Name</label>
+              <input type="text" placeholder="e.g. Contact Alpha" [(ngModel)]="payRecipient" name="payRecipient" required>
+            </div>
+            <div class="form-field">
+              <label>Transfer Amount ({{ selectedCurrency }})</label>
+              <input type="number" placeholder="0.00" [(ngModel)]="payAmount" name="payAmount" min="0.01" step="0.01" required>
+            </div>
+            <div class="form-field">
+              <label>Funding Account</label>
+              <select name="payCard">
+                @for (c of cards; track c.id) {
+                  <option [value]="c.id" [disabled]="c.frozen">Virtual {{ c.type === 'debit' ? 'Debit' : 'Credit' }} Card ending in {{ c.number.slice(-4) }} {{ c.frozen ? '(Locked)' : '' }}</option>
+                }
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Transfer Purpose/Reference</label>
+              <input type="text" placeholder="e.g. Utility settlement" [(ngModel)]="payNote" name="payNote">
+            </div>
+            <button type="submit" class="submit-action-btn">Authorize Transfer</button>
+          </form>
+        }
+
+        <!-- Request Inbound -->
+        @if (activeModal === 'request') {
+          <form (submit)="submitRequest(); $event.preventDefault()" class="modal-form">
+            <div class="form-field">
+              <label>Request Originator (Username)</label>
+              <input type="text" placeholder="e.g. Contact Beta" [(ngModel)]="requestFrom" name="requestFrom" required>
+            </div>
+            <div class="form-field">
+              <label>Requested Amount ({{ selectedCurrency }})</label>
+              <input type="number" placeholder="0.00" [(ngModel)]="requestAmount" name="requestAmount" min="0.01" step="0.01" required>
+            </div>
+            <div class="form-field">
+              <label>Request Reason Reference</label>
+              <input type="text" placeholder="e.g. Joint expense reimbursement" [(ngModel)]="requestNote" name="requestNote">
+            </div>
+            <button type="submit" class="submit-action-btn">Create Payment Request</button>
+          </form>
+        }
+
+        <!-- Buy Airtime -->
+        @if (activeModal === 'airtime') {
+          <form (submit)="submitAirtime(); $event.preventDefault()" class="modal-form">
+            <div class="form-field">
+              <label>Select Provider</label>
+              <select [(ngModel)]="airtimeCarrier" name="airtimeCarrier">
+                <option value="SecureNet">SecureNet Wireless</option>
+                <option value="GlobalComm">GlobalComm Mobile</option>
+                <option value="EcoTalk">EcoTalk Network</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Phone Number Reference</label>
+              <input type="tel" placeholder="e.g. +1 555 123 4567" [(ngModel)]="airtimePhone" name="airtimePhone" required>
+            </div>
+            <div class="form-field">
+              <label>Amount ({{ selectedCurrency }})</label>
+              <input type="number" placeholder="0.00" [(ngModel)]="airtimeAmount" name="airtimeAmount" min="1" required>
+            </div>
+            <button type="submit" class="submit-action-btn">Authorize Top-up</button>
+          </form>
+        }
+
+        <!-- Pay Bill -->
+        @if (activeModal === 'bill') {
+          <form (submit)="submitBill(); $event.preventDefault()" class="modal-form">
+            <div class="form-field">
+              <label>Biller Organization</label>
+              <select [(ngModel)]="billType" name="billType">
+                <option value="Utilities">Utilities Corporation</option>
+                <option value="Municipal">Municipal Water Supply</option>
+                <option value="Broadband">Broadband Provider</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Biller Account Number</label>
+              <input type="text" placeholder="e.g. ACC-29384-88" [(ngModel)]="billAccount" name="billAccount" required>
+            </div>
+            <div class="form-field">
+              <label>Bill Amount ({{ selectedCurrency }})</label>
+              <input type="number" placeholder="0.00" [(ngModel)]="billAmount" name="billAmount" min="0.01" step="0.01" required>
+            </div>
+            <button type="submit" class="submit-action-btn">Authorize Bill Settlement</button>
+          </form>
+        }
+
+        <!-- Add Contact -->
+        @if (activeModal === 'addContact') {
+          <form (submit)="submitAddContact(); $event.preventDefault()" class="modal-form">
+            <div class="form-field">
+              <label>Beneficiary Name</label>
+              <input type="text" placeholder="e.g. Verified Contact" [(ngModel)]="newContactName" name="newContactName" required>
+            </div>
+            <div class="form-field">
+              <label>Account Territory / Currency</label>
+              <select [(ngModel)]="newContactFlag" name="newContactFlag">
+                <option value="🇬🇭">Territory GHS (🇬🇭)</option>
+                <option value="🇺🇸">Territory USD (🇺🇸)</option>
+                <option value="🇪🇺">Territory EUR (🇪🇺)</option>
+                <option value="🇬🇧">Territory GBP (🇬🇧)</option>
+                <option value="🇮🇳">Territory INR (🇮🇳)</option>
+              </select>
+            </div>
+            <button type="submit" class="submit-action-btn">Register Beneficiary Account</button>
+          </form>
+        }
+
+        <!-- Add Card -->
+        @if (activeModal === 'addCard') {
+          <form (submit)="submitAddCard(); $event.preventDefault()" class="modal-form">
+            <div class="form-field">
+              <label>Virtual Card Class</label>
+              <select [(ngModel)]="newCardType" name="newCardType">
+                <option value="debit">Secure Virtual Debit Card</option>
+                <option value="credit">Secure Virtual Credit Card</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Card Graphic Accent</label>
+              <select [(ngModel)]="newCardColor" name="newCardColor">
+                <option value="blue">Sapphire Ocean</option>
+                <option value="purple">Royal Nebula</option>
+                <option value="pink">Cyber Pink</option>
+                <option value="dark">Midnight Velvet</option>
+              </select>
+            </div>
+            <button type="submit" class="submit-action-btn">Initialize Card Generation</button>
+          </form>
+        }
+
+      </div>
     </div>
   </div>
-</section>
+}

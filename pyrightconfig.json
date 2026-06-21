@@ -1,0 +1,12 @@
+{
+  "exclude": [
+    "**/node_modules",
+    "**/__pycache__",
+    "frontend"
+  ],
+  "extraPaths": [
+    "backend/python-api"
+  ],
+  "venvPath": "/Users/sandeepthota/AI/Learning-UpSkill",
+  "venv": ".venv"
+}

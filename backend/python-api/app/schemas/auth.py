@@ -9,6 +9,7 @@ class AuthRecordCreate(BaseModel):
 
     mode: str = Field(pattern="^(login|register)$")
     email: EmailStr
+    password: str = Field(min_length=8)
     first_name: Annotated[
         str | None,
         Field(
@@ -54,3 +55,10 @@ class AuthRecordResponse(BaseModel):
 
 def now_utc() -> datetime:
     return datetime.now(timezone.utc)
+
+
+class AuthVerifyRequest(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    email: EmailStr
+    code: str = Field(min_length=6, max_length=6, pattern="^[0-9]{6}$")

@@ -1,4 +1,17 @@
 {
+    "python.defaultInterpreterPath": "/Users/sandeepthota/AI/Learning-UpSkill/.venv/bin/python",
+    "python.interpreterPath": "/Users/sandeepthota/AI/Learning-UpSkill/.venv/bin/python",
+    "python.analysis.venvPath": "/Users/sandeepthota/AI/Learning-UpSkill",
+    "python.analysis.venv": ".venv",
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/backend/python-api"
+    ],
+    "python.autoComplete.extraPaths": [
+        "${workspaceFolder}/backend/python-api"
+    ],
+    "terminal.integrated.env.osx": {
+        "PYTHONPATH": "${workspaceFolder}/backend/python-api"
+    },
     "mdb.presetConnections": [
         {
             "name": "Preset Connection",

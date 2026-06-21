@@ -21,10 +21,16 @@ export class AuthComponent {
   private readonly authApi = inject(AuthApiService);
   private readonly router = inject(Router);
 
+  constructor() {
+    this.authApi.clearUserDetails();
+  }
+
   mode: AuthMode = 'login';
   loading = false;
   statusMessage = '';
   statusTone: StatusTone = 'info';
+  showVerificationForm = false;
+  verificationEmail = '';
 
   readonly loginForm = this.formBuilder.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -33,18 +39,30 @@ export class AuthComponent {
   });
 
   readonly registerForm = this.formBuilder.nonNullable.group({
-    firstName: ['', [Validators.required, Validators.minLength(2)]],
-    lastName: ['', [Validators.required, Validators.minLength(2)]],
+    firstName: ['', [Validators.required, Validators.minLength(2), Validators.pattern('^[a-zA-Z\\s\\-]+$')]],
+    lastName: ['', [Validators.required, Validators.minLength(2), Validators.pattern('^[a-zA-Z\\s\\-]+$')]],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
+    password: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(10),
+        Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{10,}$'),
+      ],
+    ],
     confirmPassword: ['', [Validators.required]],
     agreeToTerms: [false, [Validators.requiredTrue]],
+  });
+
+  readonly verificationForm = this.formBuilder.nonNullable.group({
+    code: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6), Validators.pattern('^[0-9]{6}$')]],
   });
 
   setMode(mode: AuthMode): void {
     this.mode = mode;
     this.statusMessage = '';
     this.statusTone = 'info';
+    this.showVerificationForm = false;
   }
 
   async submit(): Promise<void> {
@@ -74,6 +92,7 @@ export class AuthComponent {
       const payload = {
         mode: this.mode,
         email: this.mode === 'login' ? this.loginForm.controls.email.value : this.registerForm.controls.email.value,
+        password: this.mode === 'login' ? this.loginForm.controls.password.value : this.registerForm.controls.password.value,
         firstName: this.mode === 'register' ? this.registerForm.controls.firstName.value : undefined,
         lastName: this.mode === 'register' ? this.registerForm.controls.lastName.value : undefined,
         rememberMe: this.mode === 'login' ? this.loginForm.controls.rememberMe.value : undefined,
@@ -88,6 +107,13 @@ export class AuthComponent {
       this.statusTone = 'success';
       this.statusMessage = successMessage;
 
+      if (this.mode === 'register' && response.insertedId === 'pending') {
+        this.showVerificationForm = true;
+        this.verificationEmail = payload.email;
+        this.loading = false;
+        return;
+      }
+
       form.reset(
         this.mode === 'login'
           ? { email: '', password: '', rememberMe: true }
@@ -101,20 +127,79 @@ export class AuthComponent {
             },
       );
 
+      const userDetails = this.buildUserDetails(payload);
+      this.authApi.setUserDetails(userDetails);
+
       await this.router.navigate(['/dashboard'], {
         state: {
-          userDetails: this.buildUserDetails(payload),
+          userDetails,
           mode: this.mode,
           record: response,
           message: successMessage,
         },
       });
-    } catch {
+    } catch (error: any) {
       this.statusTone = 'error';
-      this.statusMessage = 'We could not save your request. Please try again.';
+      this.statusMessage = error?.error?.detail || 'We could not save your request. Please try again.';
     } finally {
       this.loading = false;
     }
+  }
+
+  async submitVerification(): Promise<void> {
+    if (this.verificationForm.invalid) {
+      this.verificationForm.markAllAsTouched();
+      this.statusTone = 'error';
+      this.statusMessage = 'Please enter a valid 6-digit verification code.';
+      return;
+    }
+
+    this.loading = true;
+    this.statusMessage = '';
+
+    try {
+      const code = this.verificationForm.controls.code.value;
+      const response = await firstValueFrom(this.authApi.verifyRegistration(this.verificationEmail, code));
+
+      this.statusTone = 'success';
+      this.statusMessage = response.message || 'Verification successful!';
+
+      const userDetails = {
+        name: `${this.registerForm.controls.firstName.value} ${this.registerForm.controls.lastName.value}`.trim() || this.verificationEmail.split('@')[0],
+        email: this.verificationEmail,
+        mode: 'register' as AuthMode,
+        rememberMe: false,
+        agreeToTerms: this.registerForm.controls.agreeToTerms.value,
+      };
+
+      this.authApi.setUserDetails(userDetails);
+
+      this.registerForm.reset();
+      this.verificationForm.reset();
+      this.showVerificationForm = false;
+
+      await this.router.navigate(['/dashboard'], {
+        state: {
+          userDetails,
+          mode: 'register',
+          record: response,
+          message: response.message,
+        },
+      });
+    } catch (error: any) {
+      this.statusTone = 'error';
+      this.statusMessage = error?.error?.detail || 'Verification failed. Please check your code and try again.';
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  cancelVerification(): void {
+    this.showVerificationForm = false;
+    this.verificationEmail = '';
+    this.verificationForm.reset();
+    this.statusMessage = '';
+    this.statusTone = 'info';
   }
 
   getControlError(control: AbstractControl | null): string | null {
@@ -135,8 +220,26 @@ export class AuthComponent {
       return `Please use at least ${requiredLength} characters.`;
     }
 
+    if (control.hasError('maxlength')) {
+      const requiredLength = control.errors['maxlength'].requiredLength;
+      return `Please use at most ${requiredLength} characters.`;
+    }
+
     if (control.hasError('requiredTrue')) {
       return 'Please accept the terms to continue.';
+    }
+
+    if (control.hasError('pattern')) {
+      if (control === this.registerForm.get('password')) {
+        return 'Password must contain uppercase, lowercase, numbers, and special characters.';
+      }
+      if (control === this.registerForm.get('firstName') || control === this.registerForm.get('lastName')) {
+        return 'Name can only contain letters, spaces, and hyphens.';
+      }
+      if (control === this.verificationForm.get('code')) {
+        return 'Code must be exactly 6 digits.';
+      }
+      return 'Please format this input correctly.';
     }
 
     return 'Please enter a valid value.';
@@ -147,10 +250,16 @@ export class AuthComponent {
   }
 
   get pageTitle(): string {
+    if (this.showVerificationForm) {
+      return 'Verify your Gmail';
+    }
     return this.mode === 'login' ? 'Welcome to Shizen Bank' : 'Open your Shizen Bank profile';
   }
 
   get pageCopy(): string {
+    if (this.showVerificationForm) {
+      return 'Complete registration by verifying your email address.';
+    }
     return this.mode === 'login'
       ? 'Access your accounts, cards, and transfers from one secure dashboard.'
       : 'Create a profile for a seamless banking experience on web and mobile.';

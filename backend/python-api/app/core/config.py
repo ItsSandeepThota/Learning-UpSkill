@@ -14,10 +14,15 @@ class Settings(BaseSettings):
 
     mongodb_uri: str = Field(default="mongodb://localhost:27017")
     mongodb_db: str = Field(default="BankApplication")
-    mongodb_collection: str = Field(default="UserDetails")
+    mongodb_collection: str = Field(default="users")
     cors_origins: list[str] = Field(
         default_factory=lambda: ["http://localhost:4200", "http://127.0.0.1:4200"]
     )
+    smtp_host: str | None = Field(default=None)
+    smtp_port: int = Field(default=587)
+    smtp_username: str | None = Field(default=None)
+    smtp_password: str | None = Field(default=None)
+    smtp_from: str | None = Field(default=None)
 
 
 @lru_cache
