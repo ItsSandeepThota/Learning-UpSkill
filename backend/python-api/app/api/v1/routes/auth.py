@@ -1,6 +1,6 @@
 import traceback
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, BackgroundTasks
 
 from app.schemas.auth import AuthRecordCreate, AuthRecordResponse, AuthVerifyRequest
 from app.services.auth import record_auth_event, verify_registration_otp
@@ -9,9 +9,9 @@ router = APIRouter()
 
 
 @router.post("/records", response_model=AuthRecordResponse, status_code=status.HTTP_201_CREATED)
-async def create_auth_record(payload: AuthRecordCreate) -> AuthRecordResponse:
+async def create_auth_record(payload: AuthRecordCreate, background_tasks: BackgroundTasks) -> AuthRecordResponse:
     try:
-        return await record_auth_event(payload)
+        return await record_auth_event(payload, background_tasks)
     except HTTPException:
         raise
     except Exception as exc:

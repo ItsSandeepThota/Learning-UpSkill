@@ -9,7 +9,7 @@ from email.mime.text import MIMEText
 from pathlib import Path
 
 from email_validator import EmailNotValidError, validate_email
-from fastapi import HTTPException, status
+from fastapi import BackgroundTasks, HTTPException, status
 from pymongo.errors import PyMongoError
 
 from app.core.config import settings
@@ -92,7 +92,7 @@ Shizen Bank Security Team
         return False
 
 
-async def record_auth_event(payload: AuthRecordCreate) -> AuthRecordResponse:
+async def record_auth_event(payload: AuthRecordCreate, background_tasks: BackgroundTasks = None) -> AuthRecordResponse:
     database = get_database()
     email_clean = payload.email.lower().strip()
     inserted_id = ""
@@ -177,8 +177,11 @@ async def record_auth_event(payload: AuthRecordCreate) -> AuthRecordResponse:
                 detail="Failed to initiate registration verification."
             ) from exc
 
-        # Send SMTP verification email
-        send_verification_email(email_clean, otp_code)
+        # Send SMTP verification email in the background to prevent request hangs
+        if background_tasks:
+            background_tasks.add_task(send_verification_email, email_clean, otp_code)
+        else:
+            send_verification_email(email_clean, otp_code)
 
         return AuthRecordResponse(
             inserted_id="pending",
