@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -20,6 +20,7 @@ export class AuthComponent {
   private readonly formBuilder = inject(FormBuilder);
   private readonly authApi = inject(AuthApiService);
   private readonly router = inject(Router);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   constructor() {
     this.authApi.clearUserDetails();
@@ -112,6 +113,7 @@ export class AuthComponent {
         this.showVerificationForm = true;
         this.verificationEmail = payload.email;
         this.loading = false;
+        this.cdr.detectChanges();
         return;
       }
 
@@ -171,11 +173,13 @@ export class AuthComponent {
       this.verificationForm.reset();
       this.showVerificationForm = false;
       this.mode = 'login';
+      this.cdr.detectChanges();
     } catch (error: any) {
       this.statusTone = 'error';
       this.statusMessage = error?.error?.detail || 'Verification failed. Please check your code and try again.';
     } finally {
       this.loading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -185,6 +189,7 @@ export class AuthComponent {
     this.verificationForm.reset();
     this.statusMessage = '';
     this.statusTone = 'info';
+    this.cdr.detectChanges();
   }
 
   getControlError(control: AbstractControl | null): string | null {
