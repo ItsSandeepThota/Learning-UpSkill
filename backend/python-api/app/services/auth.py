@@ -108,9 +108,9 @@ async def record_auth_event(payload: AuthRecordCreate) -> AuthRecordResponse:
                 detail="Only Gmail addresses (@gmail.com) are allowed to register."
             )
 
-        # 2. Real-time deliverability check
+        # 2. Real-time validation
         try:
-            validate_email(email_clean, check_deliverability=True)
+            validate_email(email_clean, check_deliverability=False)
         except EmailNotValidError as exc:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
