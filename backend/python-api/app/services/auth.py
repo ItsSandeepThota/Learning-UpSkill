@@ -360,9 +360,12 @@ async def verify_registration_otp(payload: AuthVerifyRequest) -> AuthRecordRespo
         await database["pending_registrations"].delete_many({"email": email_clean})
 
     except PyMongoError as exc:
+        import traceback
+        print("DATABASE WRITE ERROR TRACEBACK:")
+        print(traceback.format_exc())
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to complete registration database entries."
+            detail=f"Failed to complete registration database entries. Reason: {exc}"
         ) from exc
 
     return AuthRecordResponse(
