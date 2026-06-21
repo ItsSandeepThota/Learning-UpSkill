@@ -163,30 +163,14 @@ export class AuthComponent {
       const response = await firstValueFrom(this.authApi.verifyRegistration(this.verificationEmail, code));
 
       this.statusTone = 'success';
-      this.statusMessage = response.message || 'Verification successful!';
+      this.statusMessage = response.message || 'Registration verified and completed successfully. Please log in.';
 
-      const userDetails = {
-        name: `${this.registerForm.controls.firstName.value} ${this.registerForm.controls.lastName.value}`.trim() || this.verificationEmail.split('@')[0],
-        email: this.verificationEmail,
-        mode: 'register' as AuthMode,
-        rememberMe: false,
-        agreeToTerms: this.registerForm.controls.agreeToTerms.value,
-      };
-
-      this.authApi.setUserDetails(userDetails);
+      this.authApi.clearUserDetails();
 
       this.registerForm.reset();
       this.verificationForm.reset();
       this.showVerificationForm = false;
-
-      await this.router.navigate(['/dashboard'], {
-        state: {
-          userDetails,
-          mode: 'register',
-          record: response,
-          message: response.message,
-        },
-      });
+      this.mode = 'login';
     } catch (error: any) {
       this.statusTone = 'error';
       this.statusMessage = error?.error?.detail || 'Verification failed. Please check your code and try again.';
