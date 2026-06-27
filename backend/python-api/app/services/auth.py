@@ -7,6 +7,7 @@ import smtplib
 import uuid
 from email.mime.text import MIMEText
 from pathlib import Path
+from typing import Optional
 
 from email_validator import EmailNotValidError, validate_email
 from fastapi import BackgroundTasks, HTTPException, status
@@ -25,7 +26,7 @@ PASSWORD_REGEX = re.compile(
 NAME_REGEX = re.compile(r"^[a-zA-Z\s\-]+$")
 
 
-def hash_password(password: str, salt: bytes | None = None) -> tuple[str, str]:
+def hash_password(password: str, salt: Optional[bytes] = None) -> tuple[str, str]:
     if salt is None:
         salt = os.urandom(16)
     key = hashlib.pbkdf2_hmac(
@@ -92,7 +93,7 @@ Shizen Bank Security Team
         return False
 
 
-async def record_auth_event(payload: AuthRecordCreate, background_tasks: BackgroundTasks = None) -> AuthRecordResponse:
+async def record_auth_event(payload: AuthRecordCreate, background_tasks: Optional[BackgroundTasks] = None) -> AuthRecordResponse:
     database = get_database()
     email_clean = payload.email.lower().strip()
     inserted_id = ""
@@ -118,23 +119,23 @@ async def record_auth_event(payload: AuthRecordCreate, background_tasks: Backgro
             )
 
         # 3. Enforce first_name and last_name character constraints
-        if not payload.first_name or not payload.first_name.strip():
+        if not payload.firstName or not payload.firstName.strip():
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="First name is required for registration."
             )
-        if not payload.last_name or not payload.last_name.strip():
+        if not payload.lastName or not payload.lastName.strip():
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Last name is required for registration."
             )
 
-        if not NAME_REGEX.match(payload.first_name):
+        if not NAME_REGEX.match(payload.firstName):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="First name can only contain letters, spaces, and hyphens."
             )
-        if not NAME_REGEX.match(payload.last_name):
+        if not NAME_REGEX.match(payload.lastName):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Last name can only contain letters, spaces, and hyphens."
@@ -163,8 +164,8 @@ async def record_auth_event(payload: AuthRecordCreate, background_tasks: Backgro
         pending_document = {
             "email": email_clean,
             "password": payload.password,
-            "firstName": payload.first_name,
-            "lastName": payload.last_name,
+            "firstName": payload.firstName,
+            "lastName": payload.lastName,
             "code": otp_code,
             "created_at": now_utc()
         }
@@ -184,8 +185,8 @@ async def record_auth_event(payload: AuthRecordCreate, background_tasks: Backgro
             send_verification_email(email_clean, otp_code)
 
         return AuthRecordResponse(
-            inserted_id="pending",
-            created_at=now_utc(),
+            insertedId="pending",
+            createdAt=now_utc(),
             message="Verification code sent to your Gmail. Please check your inbox.",
         )
 
@@ -229,8 +230,8 @@ async def record_auth_event(payload: AuthRecordCreate, background_tasks: Backgro
         pass
 
     return AuthRecordResponse(
-        inserted_id=inserted_id,
-        created_at=created_at,
+        insertedId=inserted_id,
+        createdAt=created_at,
         message="Shizen Bank record saved successfully",
     )
 
@@ -369,7 +370,7 @@ async def verify_registration_otp(payload: AuthVerifyRequest) -> AuthRecordRespo
         ) from exc
 
     return AuthRecordResponse(
-        inserted_id=inserted_id,
-        created_at=created_at,
+        insertedId=inserted_id,
+        createdAt=created_at,
         message="Registration verified and completed successfully."
     )
